@@ -78,7 +78,7 @@ def analyze_image(api_key, image):
         genai.configure(api_key=api_key)
         
         # Using the latest multimodal flash model recommended for fast visual processing
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         system_prompt = (
             "You are an AI spatial guide embedded in an AR headset for a blind or low-vision user. "
