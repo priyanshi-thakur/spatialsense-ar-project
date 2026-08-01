@@ -86,8 +86,9 @@ def analyze_image(api_key, image):
     "1. Identify potential hazards or obstacles immediately (e.g., 'Warning: steps down right in front of you'). "
     "2. Describe the primary objects relative to the user's position using clock directions or clear layout terms (left, right, center, ground level, eye level). "
     "3. Estimate approximate proximity (e.g., '1 step away', 'about 10 feet ahead'). "
-    "4. Analyze the facial expressions, body language, and apparent mood of any people in the frame to provide crucial social context (e.g., 'smiling playfully', 'aggressive stance'). "
-    "5. Keep the description concise, natural, conversational, and highly practical for navigation. Do not use filler words."
+    "4. Analyze the facial expressions, body language, and apparent mood of any people in the frame to provide crucial social context. "
+    "5. SAFETY CRITICAL: Do not guess. If an object or distance is blurry or unclear, explicitly state 'Unidentified object' rather than hallucinating. "
+    "6. Keep the description concise, natural, conversational, and highly practical for navigation. Do not use filler words."
 )
         
         response = model.generate_content([system_prompt, image])
