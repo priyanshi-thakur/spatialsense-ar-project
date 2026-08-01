@@ -8,55 +8,89 @@ from PIL import Image
 # Page Configuration & Theming
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="SpatialSense | AR Accessibility Tool",
+    page_title="SpatialSense | AR Accessibility",
     page_icon="👁️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for high-contrast accessibility, modern typography, and clear UI boundaries
+# -----------------------------------------------------------------------------
+# Advanced Glassmorphism & Animated AR CSS
+# -----------------------------------------------------------------------------
 def apply_custom_css():
     st.markdown("""
         <style>
-            /* Global text settings for high readability */
-            html, body, [class*="css"]  {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-                font-size: 18px;
+            /* Import modern web font */
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+            html, body, [class*="css"] {
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
             }
-            
-            /* High-visibility headers */
-            h1, h2, h3 {
-                color: #1E1E1E;
-                font-weight: 700;
-                letter-spacing: -0.5px;
+
+            /* Animated Gradient Title */
+            .main-title {
+                font-size: 2.8rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 50%, #00C6FF 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 0px;
+                letter-spacing: -1px;
+                animation: pulseGlow 4s ease-in-out infinite alternate;
             }
-            
-            /* Action Button styling */
-            .stButton > button {
-                background-color: #0056D2;
-                color: white;
-                font-weight: 600;
+
+            .sub-title {
+                color: #A0AEC0;
                 font-size: 1.1rem;
-                padding: 0.6rem 1.5rem;
-                border-radius: 8px;
-                border: none;
-                width: 100%;
-                transition: all 0.2s ease-in-out;
+                font-weight: 500;
+                margin-bottom: 1.5rem;
             }
+
+            /* Glassmorphism Containers */
+            div[data-testid="stVerticalBlockBorderWrapper"] {
+                background: rgba(255, 255, 255, 0.03) !important;
+                backdrop-filter: blur(16px) saturate(180%) !important;
+                -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                border-radius: 16px !important;
+                padding: 1.2rem !important;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+                transition: transform 0.3s ease, border-color 0.3s ease;
+            }
+
+            div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+                border-color: rgba(79, 172, 254, 0.4) !important;
+            }
+
+            /* Glowing Futuristic Button */
+            .stButton > button {
+                background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%) !important;
+                color: #FFFFFF !important;
+                font-weight: 700 !important;
+                font-size: 1.05rem !important;
+                padding: 0.75rem 1.5rem !important;
+                border-radius: 12px !important;
+                border: none !important;
+                box-shadow: 0 4px 15px rgba(67, 100, 247, 0.4) !important;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            }
+
             .stButton > button:hover {
-                background-color: #003C93;
-                box-shadow: 0 4px 10px rgba(0, 86, 210, 0.3);
+                transform: translateY(-3px) scale(1.01) !important;
+                box-shadow: 0 8px 25px rgba(67, 100, 247, 0.7) !important;
             }
-            
-            /* High-contrast alert boxes */
-            .stAlert {
-                border-left: 5px solid;
+
+            /* Sidebar Glass Style */
+            section[data-testid="stSidebar"] {
+                background-color: rgba(15, 23, 42, 0.8) !important;
+                backdrop-filter: blur(12px) !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
             }
-            
-            /* Separator */
-            hr {
-                border-top: 2px solid #E0E0E0;
-                margin: 1.5rem 0;
+
+            /* Smooth fade-in keyframes */
+            @keyframes pulseGlow {
+                0% { filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.2)); }
+                100% { filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.6)); }
             }
         </style>
     """, unsafe_allow_html=True)
@@ -65,18 +99,16 @@ def apply_custom_css():
 # Core Functions
 # -----------------------------------------------------------------------------
 def analyze_image(api_key, image):
-    """Interacts with Gemini Vision API to analyze the spatial surroundings."""
+    """Interacts with Gemini Vision API to analyze spatial surroundings."""
     try:
         genai.configure(api_key=api_key)
-        
-        # Using the multimodal flash model for fast visual processing
         model = genai.GenerativeModel('gemini-3.6-flash')
         
         system_prompt = (
             "You are an AI spatial guide embedded in an AR headset for a blind or low-vision user. "
             "Analyze this image (which represents the user's current camera feed). "
             "1. Identify potential hazards or obstacles immediately (e.g., 'Warning: steps down right in front of you'). "
-            "2. Describe the primary objects relative to the user's position using clock directions or clear layout terms (left, right, center, ground level, eye level). "
+            "2. Describe the primary objects relative to the user's position using clock directions or clear layout terms. "
             "3. Estimate approximate proximity (e.g., '1 step away', 'about 10 feet ahead'). "
             "4. Analyze the facial expressions, body language, and apparent mood of any people in the frame to provide crucial social context. "
             "5. SAFETY CRITICAL: Do not guess. If an object or distance is blurry or unclear, explicitly state 'Unidentified object' rather than hallucinating. "
@@ -108,69 +140,67 @@ def text_to_speech(text):
 def main():
     apply_custom_css()
 
-    # Sidebar: Setup & API Config
+    # Sidebar Configuration
     with st.sidebar:
-        st.image("https://cdn-icons-png.flaticon.com/512/3114/3114930.png", width=60)
-        st.title("Settings")
-        st.markdown("Configure your AI model settings below.")
+        st.image("https://cdn-icons-png.flaticon.com/512/3114/3114930.png", width=50)
+        st.markdown("### **System Settings**")
         
         api_key = st.text_input(
-            "Google Gemini API Key",
+            "Gemini API Key",
             type="password",
-            help="Enter your Gemini API key. It is used securely and not stored."
+            help="Enter your Gemini API key."
         )
         
         st.markdown("---")
-        st.markdown("### How it works")
-        st.markdown(
-            "**SpatialSense** uses multimodal AI to act as a digital guide. "
-            "Snap a photo to receive an instant spatial audio narration."
+        st.markdown("### **About SpatialSense**")
+        st.caption(
+            "SpatialSense provides real-time spatial awareness and social context "
+            "narration for visually impaired users via multimodal AI vision."
         )
 
-    # Title Header
-    st.title("👁️ SpatialSense")
-    st.caption("Real-Time Spatial Vision & Accessibility Assistant")
-    st.markdown("---")
+    # Header Section
+    st.markdown('<p class="main-title">👁️ SpatialSense AI</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">Spatial Vision & Social Intelligence Assistant for AR Accessibility</p>', unsafe_allow_html=True)
 
-    # Split main canvas into 2 equal columns
+    # 2-Column Responsive Glass Grid
     left_col, right_col = st.columns([1, 1], gap="large")
 
     with left_col:
         with st.container(border=True):
-            st.subheader("📷 Camera Input")
-            uploaded_file = st.camera_input("Take a photo of your surroundings")
+            st.markdown("### 📷 **Camera Feed**")
+            uploaded_file = st.camera_input("Capture frame", label_visibility="collapsed")
             
-            analyze_btn = st.button("🔍 Analyze Spatial Surroundings", use_container_width=True)
+            analyze_btn = st.button("✨ Analyze Spatial Surroundings", use_container_width=True)
 
     with right_col:
         with st.container(border=True):
-            st.subheader("🎙️ Spatial Feedback")
+            st.markdown("### 🎙️ **Spatial Audio Feedback**")
             
             if uploaded_file is not None and analyze_btn:
                 if not api_key:
-                    st.warning("Please enter your Gemini API key in the sidebar to proceed.")
+                    st.warning("⚠️ Please enter your Gemini API key in the sidebar.")
                 else:
                     try:
                         image = Image.open(uploaded_file)
                         
-                        with st.spinner("Analyzing environment... please wait."):
+                        with st.spinner("⚡ Processing visual context..."):
                             description = analyze_image(api_key, image)
                             
                             if description:
                                 st.success("Analysis Complete")
-                                st.markdown("#### 📝 Text Description")
+                                st.markdown("#### 📝 **Environmental Breakdown**")
                                 st.write(description)
                                 
-                                with st.spinner("Generating audio..."):
+                                with st.spinner("🔊 Synthesizing spatial speech..."):
                                     audio_file = text_to_speech(description)
                                     
                                 if audio_file:
-                                    st.markdown("#### 🎧 Audio Guide")
+                                    st.markdown("#### 🎧 **Audio Navigation Guide**")
                                     st.audio(audio_file, format='audio/mp3', autoplay=True)
                     except Exception as e:
-                        st.error(f"Error processing image: {str(e)}")
+                        st.error(f"Error processing frame: {str(e)}")
             else:
-                st.info("Snap a photo on the left and click **Analyze Spatial Surroundings** to generate feedback.")
+                st.info("💡 Capture a camera frame on the left and tap **Analyze** to generate real-time spatial narration.")
 
 if __name__ == "__main__":
     main()
