@@ -138,14 +138,10 @@ def main():
     st.title("👁️ SpatialSense")
     st.markdown("**Spatial Vision for the Visually Impaired**")
     
-    st.info("Upload a photo of your surroundings to receive a spatial audio description.")
+    st.info("Snap a photo of your surroundings to receive a spatial audio description.")
 
     # Drag-and-drop Image Uploader
-    uploaded_file = st.file_uploader(
-        "Simulate AR camera feed (Upload Image)", 
-        type=["jpg", "jpeg", "png"],
-        label_visibility="collapsed"
-    )
+    uploaded_file = st.camera_input("Take a photo of your surroundings")
 
     if uploaded_file is not None:
         try:
