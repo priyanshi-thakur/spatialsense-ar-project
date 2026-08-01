@@ -172,7 +172,7 @@ def main():
                                 
                             if audio_file:
                                 st.markdown("### 🎧 Audio Guide")
-                                st.audio(audio_file, format='audio/mp3', start_time=0)
+                                st.audio(audio_file, format='audio/mp3', autoplay=True)
                                 
         except Exception as e:
             st.error(f"Could not read the image file. Ensure it is a valid format. Error: {str(e)}")
