@@ -10,7 +10,7 @@ from PIL import Image
 st.set_page_config(
     page_title="SpatialSense | AR Accessibility Tool",
     page_icon="👁️",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
@@ -29,14 +29,6 @@ def apply_custom_css():
                 color: #1E1E1E;
                 font-weight: 700;
                 letter-spacing: -0.5px;
-            }
-            
-            /* Styled upload container */
-            .stFileUploader {
-                border: 2px dashed #4A90E2;
-                border-radius: 10px;
-                padding: 15px;
-                background-color: #F8FBFF;
             }
             
             /* Action Button styling */
@@ -64,7 +56,7 @@ def apply_custom_css():
             /* Separator */
             hr {
                 border-top: 2px solid #E0E0E0;
-                margin: 2rem 0;
+                margin: 1.5rem 0;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -77,19 +69,19 @@ def analyze_image(api_key, image):
     try:
         genai.configure(api_key=api_key)
         
-        # Using the latest multimodal flash model recommended for fast visual processing
+        # Using the multimodal flash model for fast visual processing
         model = genai.GenerativeModel('gemini-3.6-flash')
         
         system_prompt = (
-    "You are an AI spatial guide embedded in an AR headset for a blind or low-vision user. "
-    "Analyze this image (which represents the user's current camera feed). "
-    "1. Identify potential hazards or obstacles immediately (e.g., 'Warning: steps down right in front of you'). "
-    "2. Describe the primary objects relative to the user's position using clock directions or clear layout terms (left, right, center, ground level, eye level). "
-    "3. Estimate approximate proximity (e.g., '1 step away', 'about 10 feet ahead'). "
-    "4. Analyze the facial expressions, body language, and apparent mood of any people in the frame to provide crucial social context. "
-    "5. SAFETY CRITICAL: Do not guess. If an object or distance is blurry or unclear, explicitly state 'Unidentified object' rather than hallucinating. "
-    "6. Keep the description concise, natural, conversational, and highly practical for navigation. Do not use filler words."
-)
+            "You are an AI spatial guide embedded in an AR headset for a blind or low-vision user. "
+            "Analyze this image (which represents the user's current camera feed). "
+            "1. Identify potential hazards or obstacles immediately (e.g., 'Warning: steps down right in front of you'). "
+            "2. Describe the primary objects relative to the user's position using clock directions or clear layout terms (left, right, center, ground level, eye level). "
+            "3. Estimate approximate proximity (e.g., '1 step away', 'about 10 feet ahead'). "
+            "4. Analyze the facial expressions, body language, and apparent mood of any people in the frame to provide crucial social context. "
+            "5. SAFETY CRITICAL: Do not guess. If an object or distance is blurry or unclear, explicitly state 'Unidentified object' rather than hallucinating. "
+            "6. Keep the description concise, natural, conversational, and highly practical for navigation. Do not use filler words."
+        )
         
         response = model.generate_content([system_prompt, image])
         return response.text
@@ -132,50 +124,53 @@ def main():
         st.markdown("### How it works")
         st.markdown(
             "**SpatialSense** uses multimodal AI to act as a digital guide. "
-            "Upload an image simulating a camera feed, and it will vocalize "
-            "the layout, obstacles, and surroundings."
+            "Snap a photo to receive an instant spatial audio narration."
         )
 
-    # Main Canvas
+    # Title Header
     st.title("👁️ SpatialSense")
-    st.markdown("**Spatial Vision for the Visually Impaired**")
-    
-    st.info("Snap a photo of your surroundings to receive a spatial audio description.")
+    st.caption("Real-Time Spatial Vision & Accessibility Assistant")
+    st.markdown("---")
 
-    # Drag-and-drop Image Uploader
-    uploaded_file = st.camera_input("Take a photo of your surroundings")
+    # Split main canvas into 2 equal columns
+    left_col, right_col = st.columns([1, 1], gap="large")
 
-    if uploaded_file is not None:
-        try:
-            image = Image.open(uploaded_file)
+    with left_col:
+        with st.container(border=True):
+            st.subheader("📷 Camera Input")
+            uploaded_file = st.camera_input("Take a photo of your surroundings")
             
-            # Show preview
-            st.image(image, caption="Current Camera Feed Preview", use_container_width=True)
+            analyze_btn = st.button("🔍 Analyze Spatial Surroundings", use_container_width=True)
+
+    with right_col:
+        with st.container(border=True):
+            st.subheader("🎙️ Spatial Feedback")
             
-            # Primary Action Button
-            if st.button("🔍 Analyze Spatial Surroundings", use_container_width=True):
+            if uploaded_file is not None and analyze_btn:
                 if not api_key:
                     st.warning("Please enter your Gemini API key in the sidebar to proceed.")
                 else:
-                    with st.spinner("Analyzing environment... please wait."):
-                        # 1. Get Text Description
-                        description = analyze_image(api_key, image)
+                    try:
+                        image = Image.open(uploaded_file)
                         
-                        if description:
-                            st.success("Analysis Complete.")
-                            st.markdown("### 📝 Text Description")
-                            st.write(description)
+                        with st.spinner("Analyzing environment... please wait."):
+                            description = analyze_image(api_key, image)
                             
-                            # 2. Convert to Audio
-                            with st.spinner("Generating audio..."):
-                                audio_file = text_to_speech(description)
+                            if description:
+                                st.success("Analysis Complete")
+                                st.markdown("#### 📝 Text Description")
+                                st.write(description)
                                 
-                            if audio_file:
-                                st.markdown("### 🎧 Audio Guide")
-                                st.audio(audio_file, format='audio/mp3', autoplay=True)
-                                
-        except Exception as e:
-            st.error(f"Could not read the image file. Ensure it is a valid format. Error: {str(e)}")
+                                with st.spinner("Generating audio..."):
+                                    audio_file = text_to_speech(description)
+                                    
+                                if audio_file:
+                                    st.markdown("#### 🎧 Audio Guide")
+                                    st.audio(audio_file, format='audio/mp3', autoplay=True)
+                    except Exception as e:
+                        st.error(f"Error processing image: {str(e)}")
+            else:
+                st.info("Snap a photo on the left and click **Analyze Spatial Surroundings** to generate feedback.")
 
 if __name__ == "__main__":
     main()
