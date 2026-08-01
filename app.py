@@ -27,6 +27,24 @@ def apply_custom_css():
                 font-family: 'Plus Jakarta Sans', sans-serif !important;
             }
 
+            /* Animated Deep Space Background */
+            [data-testid="stAppViewContainer"] {
+                background: linear-gradient(-45deg, #0f172a, #1e293b, #020617, #0f172a);
+                background-size: 400% 400%;
+                animation: gradientBG 15s ease infinite;
+            }
+
+            @keyframes gradientBG {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            /* Fix text colors for dark theme */
+            h1, h2, h3, h4, p, label {
+                color: #f8fafc !important;
+            }
+
             /* Animated Gradient Title */
             .main-title {
                 font-size: 2.8rem;
@@ -36,30 +54,38 @@ def apply_custom_css():
                 -webkit-text-fill-color: transparent;
                 margin-bottom: 0px;
                 letter-spacing: -1px;
-                animation: pulseGlow 4s ease-in-out infinite alternate;
+                animation: pulseTitle 3s ease-in-out infinite alternate;
             }
 
             .sub-title {
-                color: #A0AEC0;
+                color: #94a3b8 !important;
                 font-size: 1.1rem;
                 font-weight: 500;
                 margin-bottom: 1.5rem;
             }
 
-            /* Glassmorphism Containers */
+            @keyframes pulseTitle {
+                0% { filter: drop-shadow(0 0 5px rgba(0, 242, 254, 0.4)); }
+                100% { filter: drop-shadow(0 0 15px rgba(79, 172, 254, 0.8)); }
+            }
+
+            /* Highly Interactive Glassmorphism Containers */
             div[data-testid="stVerticalBlockBorderWrapper"] {
-                background: rgba(255, 255, 255, 0.03) !important;
-                backdrop-filter: blur(16px) saturate(180%) !important;
-                -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-                border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+                backdrop-filter: blur(20px) saturate(200%) !important;
+                -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 border-radius: 16px !important;
                 padding: 1.2rem !important;
                 box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
-                transition: transform 0.3s ease, border-color 0.3s ease;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             }
 
+            /* The Cursor Glow Hover Effect */
             div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-                border-color: rgba(79, 172, 254, 0.4) !important;
+                border-color: rgba(0, 242, 254, 0.8) !important;
+                box-shadow: 0 0 30px 5px rgba(0, 242, 254, 0.2), inset 0 0 15px rgba(0, 242, 254, 0.05) !important;
+                transform: translateY(-5px);
             }
 
             /* Glowing Futuristic Button */
@@ -73,24 +99,23 @@ def apply_custom_css():
                 border: none !important;
                 box-shadow: 0 4px 15px rgba(67, 100, 247, 0.4) !important;
                 transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+                cursor: crosshair !important;
             }
 
             .stButton > button:hover {
-                transform: translateY(-3px) scale(1.01) !important;
-                box-shadow: 0 8px 25px rgba(67, 100, 247, 0.7) !important;
+                transform: translateY(-4px) scale(1.02) !important;
+                box-shadow: 0 0 25px 8px rgba(67, 100, 247, 0.5) !important;
+            }
+            
+            .stButton > button:active {
+                transform: scale(0.95) !important;
             }
 
             /* Sidebar Glass Style */
             section[data-testid="stSidebar"] {
-                background-color: rgba(15, 23, 42, 0.8) !important;
-                backdrop-filter: blur(12px) !important;
-                border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-            }
-
-            /* Smooth fade-in keyframes */
-            @keyframes pulseGlow {
-                0% { filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.2)); }
-                100% { filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.6)); }
+                background: rgba(15, 23, 42, 0.7) !important;
+                backdrop-filter: blur(25px) !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
             }
         </style>
     """, unsafe_allow_html=True)
