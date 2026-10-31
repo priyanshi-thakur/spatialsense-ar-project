@@ -5,7 +5,7 @@ from io import BytesIO
 from PIL import Image
 
 
-api_key = st.secrets["GEMINI_API_KEY"]
+
 # -----------------------------------------------------------------------------
 # Page Configuration & Theming
 # -----------------------------------------------------------------------------
@@ -172,11 +172,11 @@ def main():
         st.image("https://cdn-icons-png.flaticon.com/512/3114/3114930.png", width=50)
         st.markdown("### **System Settings**")
         
-        api_key = st.text_input(
-            "Gemini API Key",
-            type="password",
-            help="Enter your Gemini API key."
-        )
+        try:
+            api_key = st.secrets["GEMINI_API_KEY"]
+        except (KeyError, FileNotFoundError):
+            api_key = None
+            st.warning("Gemini API key is not configured.")
         
         st.markdown("---")
         st.markdown("### **About SpatialSense**")
@@ -205,7 +205,7 @@ def main():
             
             if uploaded_file is not None and analyze_btn:
                 if not api_key:
-                    st.warning("⚠️ Please enter your Gemini API key in the sidebar.")
+                    st.warning("⚠️ Gemini API key is missing. Please configure it in Streamlit Secrets.")
                 else:
                     try:
                         image = Image.open(uploaded_file)
