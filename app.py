@@ -4,6 +4,8 @@ from gtts import gTTS
 from io import BytesIO
 from PIL import Image
 
+
+api_key = st.secrets["GEMINI_API_KEY"]
 # -----------------------------------------------------------------------------
 # Page Configuration & Theming
 # -----------------------------------------------------------------------------
